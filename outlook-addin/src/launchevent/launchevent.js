@@ -204,8 +204,15 @@ function formatDuration(hours) {
   return h + (h === 1 ? " hora " : " horas ") + m + " min";
 }
 
+// --- Ribbon button handler ---
+
+function calculateCostFunction(event) {
+  recalculateAndUpdateInfoBar(function () {
+    event.completed();
+  });
+}
+
 // --- Register handlers ---
 
 Office.actions.associate("onAppointmentSendHandler", onAppointmentSendHandler);
-Office.actions.associate("onRecipientsChanged", onRecipientsChanged);
-Office.actions.associate("onTimeChanged", onTimeChanged);
+Office.actions.associate("calculateCostFunction", calculateCostFunction);

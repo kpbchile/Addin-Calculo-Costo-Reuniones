@@ -5,14 +5,14 @@
            xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides"
            xsi:type="MailApp">
   <Id>eec665d4-ace1-4257-8b0b-fb2944a4ebef</Id>
-  <Version>1.0.0.0</Version>
+  <Version>1.0.0.1</Version>
   <ProviderName>Generadora Metropolitana</ProviderName>
-  <DefaultLocale>es-CL</DefaultLocale>
+  <DefaultLocale>es-es</DefaultLocale>
   <DisplayName DefaultValue="Calculadora Costo Reuniones"/>
-  <Description DefaultValue="Calcula y muestra el costo estimado de una reunión antes de enviar la invitación"/>
+  <Description DefaultValue="Calcula y muestra el costo estimado de una reunion antes de enviar la invitacion"/>
   <IconUrl DefaultValue="https://gray-river-058a3831e.4.azurestaticapps.net/assets/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://gray-river-058a3831e.4.azurestaticapps.net/assets/icon-80.png"/>
-  <SupportUrl DefaultValue="https://www.generadorametropolitana.cl"/>
+  <SupportUrl DefaultValue="https://gray-river-058a3831e.4.azurestaticapps.net"/>
   <AppDomains>
     <AppDomain>https://gray-river-058a3831e.4.azurestaticapps.net</AppDomain>
   </AppDomains>
@@ -21,7 +21,7 @@
   </Hosts>
   <Requirements>
     <Sets>
-      <Set Name="Mailbox" MinVersion="1.12"/>
+      <Set Name="Mailbox" MinVersion="1.3"/>
     </Sets>
   </Requirements>
   <FormSettings>
@@ -38,6 +38,58 @@
 
   <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides"
                     xsi:type="VersionOverridesV1_0">
+    <Requirements>
+      <bt:Sets DefaultMinVersion="1.3">
+        <bt:Set Name="Mailbox"/>
+      </bt:Sets>
+    </Requirements>
+    <Hosts>
+      <Host xsi:type="MailHost">
+        <DesktopFormFactor>
+          <FunctionFile resid="Commands.Url"/>
+          <ExtensionPoint xsi:type="AppointmentOrganizerCommandSurface">
+            <OfficeTab id="TabDefault">
+              <Group id="apptCostGroup">
+                <Label resid="GroupLabel"/>
+                <Control xsi:type="Button" id="showCostBtn">
+                  <Label resid="BtnLabel"/>
+                  <Supertip>
+                    <Title resid="BtnLabel"/>
+                    <Description resid="BtnTooltip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16x16"/>
+                    <bt:Image size="32" resid="Icon.32x32"/>
+                    <bt:Image size="80" resid="Icon.80x80"/>
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>calculateCostFunction</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Images>
+        <bt:Image id="Icon.16x16" DefaultValue="https://gray-river-058a3831e.4.azurestaticapps.net/assets/icon-16.png"/>
+        <bt:Image id="Icon.32x32" DefaultValue="https://gray-river-058a3831e.4.azurestaticapps.net/assets/icon-32.png"/>
+        <bt:Image id="Icon.80x80" DefaultValue="https://gray-river-058a3831e.4.azurestaticapps.net/assets/icon-80.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="Commands.Url" DefaultValue="https://gray-river-058a3831e.4.azurestaticapps.net/commands.html"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="GroupLabel" DefaultValue="Costo Reunion"/>
+        <bt:String id="BtnLabel" DefaultValue="Calcular Costo"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="BtnTooltip" DefaultValue="Calcula el costo estimado de la reunion"/>
+      </bt:LongStrings>
+    </Resources>
+
     <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides/1.1"
                       xsi:type="VersionOverridesV1_1">
       <Requirements>
@@ -54,15 +106,33 @@
           </Runtimes>
           <DesktopFormFactor>
             <FunctionFile resid="Commands.Url"/>
+            <ExtensionPoint xsi:type="AppointmentOrganizerCommandSurface">
+              <OfficeTab id="TabDefault">
+                <Group id="apptCostGroup">
+                  <Label resid="GroupLabel"/>
+                  <Control xsi:type="Button" id="showCostBtn">
+                    <Label resid="BtnLabel"/>
+                    <Supertip>
+                      <Title resid="BtnLabel"/>
+                      <Description resid="BtnTooltip"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.16x16"/>
+                      <bt:Image size="32" resid="Icon.32x32"/>
+                      <bt:Image size="80" resid="Icon.80x80"/>
+                    </Icon>
+                    <Action xsi:type="ExecuteFunction">
+                      <FunctionName>calculateCostFunction</FunctionName>
+                    </Action>
+                  </Control>
+                </Group>
+              </OfficeTab>
+            </ExtensionPoint>
             <ExtensionPoint xsi:type="LaunchEvent">
               <LaunchEvents>
                 <LaunchEvent Type="OnAppointmentSend"
                              FunctionName="onAppointmentSendHandler"
                              SendMode="PromptUser"/>
-                <LaunchEvent Type="OnAppointmentRecipientsChanged"
-                             FunctionName="onRecipientsChanged"/>
-                <LaunchEvent Type="OnAppointmentTimeChanged"
-                             FunctionName="onTimeChanged"/>
               </LaunchEvents>
               <SourceLocation resid="WebViewRuntime.Url"/>
             </ExtensionPoint>
@@ -81,10 +151,11 @@
           <bt:Url id="JSRuntime.Url" DefaultValue="https://gray-river-058a3831e.4.azurestaticapps.net/launchevent.js"/>
         </bt:Urls>
         <bt:ShortStrings>
-          <bt:String id="GroupLabel" DefaultValue="Costo Reunión"/>
+          <bt:String id="GroupLabel" DefaultValue="Costo Reunion"/>
+          <bt:String id="BtnLabel" DefaultValue="Calcular Costo"/>
         </bt:ShortStrings>
         <bt:LongStrings>
-          <bt:String id="GroupTooltip" DefaultValue="Calcula el costo estimado de la reunión"/>
+          <bt:String id="BtnTooltip" DefaultValue="Calcula el costo estimado de la reunion"/>
         </bt:LongStrings>
       </Resources>
     </VersionOverrides>
