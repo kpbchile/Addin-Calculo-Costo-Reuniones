@@ -24,6 +24,11 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
+      filename: "index.html",
+      template: "./src/index.html",
+      chunks: [],
+    }),
+    new HtmlWebpackPlugin({
       filename: "commands.html",
       template: "./src/commands/commands.html",
       chunks: ["commands"],
