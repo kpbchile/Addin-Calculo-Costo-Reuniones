@@ -1,0 +1,51 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.16/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.16",
+  "version": "1.0.0",
+  "id": "f45d4d53-0475-43cc-919e-9de3918fe436",
+  "developer": {
+    "name": "Generadora Metropolitana",
+    "websiteUrl": "https://www.generadorametropolitana.cl",
+    "privacyUrl": "https://www.generadorametropolitana.cl/privacy",
+    "termsOfUseUrl": "https://www.generadorametropolitana.cl/terms"
+  },
+  "name": {
+    "short": "Costo Reuniones",
+    "full": "Calculadora de Costo de Reuniones"
+  },
+  "description": {
+    "short": "Muestra el costo estimado de reuniones con 6+ participantes internos",
+    "full": "Calcula y muestra el costo estimado de una reunión basado en el número de participantes internos, la duración y una tarifa fija por hora por persona."
+  },
+  "icons": {
+    "color": "assets/color.png",
+    "outline": "assets/outline.png"
+  },
+  "accentColor": "#0078D4",
+  "configurableTabs": [
+    {
+      "configurationUrl": "https://localhost:3001/tab.html",
+      "canUpdateConfiguration": false,
+      "scopes": ["groupChat"],
+      "context": [
+        "meetingDetailsTab",
+        "meetingChatTab",
+        "meetingSidePanel"
+      ]
+    }
+  ],
+  "staticTabs": [
+    {
+      "entityId": "costCalculator",
+      "name": "Costo Reuniones",
+      "contentUrl": "https://localhost:3001/tab.html",
+      "scopes": ["personal"]
+    }
+  ],
+  "permissions": ["identity", "messageTeamMembers"],
+  "validDomains": ["localhost"],
+  "webApplicationInfo": {
+    "id": "f45d4d53-0475-43cc-919e-9de3918fe436",
+    "resource": "api://localhost:3001/f45d4d53-0475-43cc-919e-9de3918fe436"
+  }
+}

@@ -1,0 +1,55 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  color: #242424;
+  background: transparent;
+}
+
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.header {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #616161;
+  margin-bottom: 8px;
+}
+
+.cost {
+  font-size: 32px;
+  font-weight: 700;
+  color: #0078D4;
+  margin-bottom: 8px;
+}
+
+.details {
+  font-size: 13px;
+  color: #616161;
+}
+
+.info {
+  font-size: 13px;
+  color: #616161;
+  margin-top: 8px;
+}
+
+#loading {
+  text-align: center;
+  padding: 24px 0;
+  color: #616161;
+}
+
+#not-applicable,
+#error {
+  padding: 8px 0;
+}

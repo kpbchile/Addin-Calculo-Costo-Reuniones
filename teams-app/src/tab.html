@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Costo Reunión</title>
+  <script src="https://res.cdn.office.net/teams-js/2.31.1/js/MicrosoftTeams.min.js"></script>
+  <link rel="stylesheet" href="tab.css" />
+</head>
+<body>
+  <div class="container">
+    <div id="loading">
+      <p>Calculando costo...</p>
+    </div>
+
+    <div id="result" style="display: none;">
+      <div class="header">COSTO ESTIMADO DE REUNIÓN</div>
+      <div class="cost" id="totalCost">$0</div>
+      <div class="details" id="details"></div>
+    </div>
+
+    <div id="not-applicable" style="display: none;">
+      <div class="header">COSTO DE REUNIÓN</div>
+      <p class="info">Esta reunión tiene menos de 6 participantes internos. No se requiere cálculo de costo.</p>
+    </div>
+
+    <div id="error" style="display: none;">
+      <div class="header">COSTO DE REUNIÓN</div>
+      <p class="info">No se pudo obtener la información de la reunión. Verifique los permisos de la aplicación.</p>
+    </div>
+  </div>
+</body>
+</html>

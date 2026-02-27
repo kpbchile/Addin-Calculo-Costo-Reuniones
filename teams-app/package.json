@@ -1,0 +1,17 @@
+{
+  "name": "calculadora-costo-reuniones-teams",
+  "version": "1.0.0",
+  "description": "Teams App - Calculadora de Costo de Reuniones para Generadora Metropolitana",
+  "scripts": {
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
+    "dev-server": "webpack serve --mode development"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^12.0.2",
+    "html-webpack-plugin": "^5.6.3",
+    "webpack": "^5.97.0",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.0"
+  }
+}
