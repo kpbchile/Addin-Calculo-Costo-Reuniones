@@ -215,4 +215,6 @@ function calculateCostFunction(event) {
 // --- Register handlers ---
 
 Office.actions.associate("onAppointmentSendHandler", onAppointmentSendHandler);
+Office.actions.associate("onRecipientsChanged", onRecipientsChanged);
+Office.actions.associate("onTimeChanged", onTimeChanged);
 Office.actions.associate("calculateCostFunction", calculateCostFunction);
