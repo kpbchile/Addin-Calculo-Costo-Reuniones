@@ -4,11 +4,11 @@
            xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
            xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides"
            xsi:type="MailApp">
-  <Id>eec665d4-ace1-4257-8b0b-fb2944a4ebef</Id>
-  <Version>1.0.0.3</Version>
+  <Id>a3f7b2c1-9d4e-4a8f-b6e5-1c2d3e4f5a6b</Id>
+  <Version>1.0.0.0</Version>
   <ProviderName>Generadora Metropolitana</ProviderName>
   <DefaultLocale>es-es</DefaultLocale>
-  <DisplayName DefaultValue="Calculadora Costo Reuniones"/>
+  <DisplayName DefaultValue="Calculador Costo Reuniones"/>
   <Description DefaultValue="Calcula y muestra el costo estimado de una reunion antes de enviar la invitacion"/>
   <IconUrl DefaultValue="https://gray-river-058a3831e.4.azurestaticapps.net/assets/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://gray-river-058a3831e.4.azurestaticapps.net/assets/icon-80.png"/>

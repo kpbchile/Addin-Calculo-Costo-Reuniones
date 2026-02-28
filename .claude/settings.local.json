@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -sI \"https://www.generadorametropolitana.cl\")",
+      "Bash(curl -sI --max-time 5 \"https://www.generadorametropolitana.cl\")"
+    ]
+  }
+}
