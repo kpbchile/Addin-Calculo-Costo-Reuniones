@@ -5,7 +5,7 @@
            xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides"
            xsi:type="MailApp">
   <Id>eec665d4-ace1-4257-8b0b-fb2944a4ebef</Id>
-  <Version>1.0.0.2</Version>
+  <Version>1.0.0.3</Version>
   <ProviderName>Generadora Metropolitana</ProviderName>
   <DefaultLocale>es-es</DefaultLocale>
   <DisplayName DefaultValue="Calculadora Costo Reuniones"/>
@@ -130,13 +130,11 @@
             </ExtensionPoint>
             <ExtensionPoint xsi:type="LaunchEvent">
               <LaunchEvents>
+                <LaunchEvent Type="OnNewAppointmentOrganizer"
+                             FunctionName="onNewAppointmentOrganizer"/>
                 <LaunchEvent Type="OnAppointmentSend"
                              FunctionName="onAppointmentSendHandler"
                              SendMode="PromptUser"/>
-                <LaunchEvent Type="OnAppointmentRecipientsChanged"
-                             FunctionName="onRecipientsChanged"/>
-                <LaunchEvent Type="OnAppointmentTimeChanged"
-                             FunctionName="onTimeChanged"/>
               </LaunchEvents>
               <SourceLocation resid="WebViewRuntime.Url"/>
             </ExtensionPoint>

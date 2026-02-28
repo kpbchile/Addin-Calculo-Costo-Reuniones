@@ -1,29 +1,15 @@
 /*
  * Calculadora de Costo de Reuniones - Generadora Metropolitana
  *
- * Handlers para eventos de Outlook:
- * - OnAppointmentRecipientsChanged: actualiza InfoBar en tiempo real
- * - OnAppointmentTimeChanged: actualiza InfoBar en tiempo real
  * - OnAppointmentSend: muestra Smart Alert con costo antes de enviar
+ * - calculateCostFunction: boton manual para mostrar InfoBar
  */
 
 var COST_PER_HOUR_PER_PERSON = 10000;
 var MIN_INTERNAL_ATTENDEES = 6;
 var NOTIFICATION_KEY = "costReunion";
 
-// --- Event Handlers ---
-
-function onRecipientsChanged(event) {
-  recalculateAndUpdateInfoBar(function () {
-    event.completed();
-  });
-}
-
-function onTimeChanged(event) {
-  recalculateAndUpdateInfoBar(function () {
-    event.completed();
-  });
-}
+// --- Smart Alert: se ejecuta al presionar Enviar ---
 
 function onAppointmentSendHandler(event) {
   gatherMeetingData(function (data) {
@@ -56,19 +42,21 @@ function onAppointmentSendHandler(event) {
   });
 }
 
-// --- Core Logic ---
+// --- Boton ribbon: muestra InfoBar con costo ---
 
-function recalculateAndUpdateInfoBar(callback) {
+function calculateCostFunction(event) {
   gatherMeetingData(function (data) {
     if (!data) {
-      clearInfoBar(callback);
+      showNotification("No se pudo obtener la informacion de la reunion.", event);
       return;
     }
 
     var costData = computeCost(data);
 
     if (costData.totalInternalParticipants < MIN_INTERNAL_ATTENDEES) {
-      clearInfoBar(callback);
+      showNotification(
+        "Esta reunion tiene " + costData.totalInternalParticipants +
+        " participantes internos. El calculo se activa con 6 o mas.", event);
       return;
     }
 
@@ -76,32 +64,29 @@ function recalculateAndUpdateInfoBar(callback) {
     var durationDisplay = formatDuration(costData.durationHours);
     var infoMessage =
       "Costo reunion: $" + formattedCost +
-      " (" + costData.totalInternalParticipants + " internos \u00b7 " +
-      durationDisplay + " \u00b7 $" + formatCurrency(COST_PER_HOUR_PER_PERSON) + "/hr/persona)";
+      " (" + costData.totalInternalParticipants + " internos, " +
+      durationDisplay + ", $" + formatCurrency(COST_PER_HOUR_PER_PERSON) + "/hr/persona)";
 
-    Office.context.mailbox.item.notificationMessages.replaceAsync(
-      NOTIFICATION_KEY,
-      {
-        type: Office.MailboxEnums.ItemNotificationMessageType.InformationalMessage,
-        message: infoMessage,
-        icon: "Icon.16x16",
-        persistent: true,
-      },
-      function () {
-        if (callback) callback();
-      }
-    );
+    showNotification(infoMessage, event);
   });
 }
 
-function clearInfoBar(callback) {
-  Office.context.mailbox.item.notificationMessages.removeAsync(
+function showNotification(message, event) {
+  Office.context.mailbox.item.notificationMessages.replaceAsync(
     NOTIFICATION_KEY,
+    {
+      type: Office.MailboxEnums.ItemNotificationMessageType.InformationalMessage,
+      message: message,
+      icon: "Icon.16x16",
+      persistent: true,
+    },
     function () {
-      if (callback) callback();
+      event.completed();
     }
   );
 }
+
+// --- Data gathering ---
 
 function gatherMeetingData(callback) {
   var userEmail = Office.context.mailbox.userProfile.emailAddress;
@@ -169,7 +154,6 @@ function computeCost(data) {
     }
   }
 
-  // +1 for the organizer (current user)
   var totalInternalParticipants = internalCount + 1;
 
   var durationMs = data.endTime.getTime() - data.startTime.getTime();
@@ -188,8 +172,6 @@ function computeCost(data) {
   };
 }
 
-// --- Formatting ---
-
 function formatCurrency(amount) {
   var rounded = Math.round(amount);
   return rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -204,17 +186,18 @@ function formatDuration(hours) {
   return h + (h === 1 ? " hora " : " horas ") + m + " min";
 }
 
-// --- Ribbon button handler ---
+// --- Auto-launch: se ejecuta al abrir nueva reunion ---
 
-function calculateCostFunction(event) {
-  recalculateAndUpdateInfoBar(function () {
-    event.completed();
-  });
+function onNewAppointmentOrganizer(event) {
+  // Mostrar InfoBar inicial informando que el calculo esta activo
+  showNotification(
+    "Calculadora de costo activa. Agregue asistentes y presione Enviar para ver el costo.",
+    event
+  );
 }
 
 // --- Register handlers ---
 
+Office.actions.associate("onNewAppointmentOrganizer", onNewAppointmentOrganizer);
 Office.actions.associate("onAppointmentSendHandler", onAppointmentSendHandler);
-Office.actions.associate("onRecipientsChanged", onRecipientsChanged);
-Office.actions.associate("onTimeChanged", onTimeChanged);
 Office.actions.associate("calculateCostFunction", calculateCostFunction);
