@@ -132,9 +132,6 @@
               <LaunchEvents>
                 <LaunchEvent Type="OnNewAppointmentOrganizer"
                              FunctionName="onNewAppointmentOrganizer"/>
-                <LaunchEvent Type="OnAppointmentSend"
-                             FunctionName="onAppointmentSendHandler"
-                             SendMode="PromptUser"/>
               </LaunchEvents>
               <SourceLocation resid="WebViewRuntime.Url"/>
             </ExtensionPoint>

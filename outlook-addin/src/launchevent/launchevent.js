@@ -1,7 +1,8 @@
 /*
- * Calculadora de Costo de Reuniones - Generadora Metropolitana
+ * Calculador de Costo de Reuniones - Generadora Metropolitana
  *
- * - OnAppointmentSend: muestra Smart Alert con costo antes de enviar
+ * - OnNewAppointmentOrganizer: registra handlers para recalcular en tiempo real
+ * - OnAppointmentSend: Smart Alert con costo antes de enviar
  * - calculateCostFunction: boton manual para mostrar InfoBar
  */
 
@@ -9,37 +10,64 @@ var COST_PER_HOUR_PER_PERSON = 10000;
 var MIN_INTERNAL_ATTENDEES = 6;
 var NOTIFICATION_KEY = "costReunion";
 
-// --- Smart Alert: se ejecuta al presionar Enviar ---
+// --- Auto-launch: se ejecuta al abrir nueva reunion ---
 
-function onAppointmentSendHandler(event) {
+function onNewAppointmentOrganizer(event) {
+  // Registrar handlers para recalcular cuando cambien asistentes o tiempo
+  Office.context.mailbox.item.addHandlerAsync(
+    Office.EventType.RecipientsChanged,
+    onRecipientsOrTimeChanged
+  );
+  Office.context.mailbox.item.addHandlerAsync(
+    Office.EventType.AppointmentTimeChanged,
+    onRecipientsOrTimeChanged
+  );
+
+  // Mostrar InfoBar inicial
+  updateInfoBar("Calculador de costo activo. Agregue asistentes para ver el costo.");
+  event.completed();
+}
+
+// --- Handler para cambios en asistentes o tiempo ---
+
+function onRecipientsOrTimeChanged() {
+  recalculateAndUpdateInfoBar();
+}
+
+function recalculateAndUpdateInfoBar() {
   gatherMeetingData(function (data) {
-    if (!data) {
-      event.completed({ allowEvent: true });
-      return;
-    }
+    if (!data) return;
 
     var costData = computeCost(data);
 
     if (costData.totalInternalParticipants < MIN_INTERNAL_ATTENDEES) {
-      event.completed({ allowEvent: true });
+      updateInfoBar(
+        "Participantes internos: " + costData.totalInternalParticipants +
+        ". El calculo se activa con " + MIN_INTERNAL_ATTENDEES + " o mas."
+      );
       return;
     }
 
     var formattedCost = formatCurrency(costData.totalCost);
     var durationDisplay = formatDuration(costData.durationHours);
-
-    var message =
-      "Costo estimado de esta reunion: $" + formattedCost +
-      "\n\nParticipantes internos: " + costData.totalInternalParticipants +
-      "\nDuracion: " + durationDisplay +
-      "\nTarifa por persona por hora: $" + formatCurrency(COST_PER_HOUR_PER_PERSON) +
-      "\n\nDesea enviar la invitacion de todas formas?";
-
-    event.completed({
-      allowEvent: false,
-      errorMessage: message,
-    });
+    updateInfoBar(
+      "Costo reunion: $" + formattedCost +
+      " (" + costData.totalInternalParticipants + " internos, " +
+      durationDisplay + ", $" + formatCurrency(COST_PER_HOUR_PER_PERSON) + "/hr/persona)"
+    );
   });
+}
+
+function updateInfoBar(message) {
+  Office.context.mailbox.item.notificationMessages.replaceAsync(
+    NOTIFICATION_KEY,
+    {
+      type: Office.MailboxEnums.ItemNotificationMessageType.InformationalMessage,
+      message: message,
+      icon: "Icon.16x16",
+      persistent: true,
+    }
+  );
 }
 
 // --- Boton ribbon: muestra InfoBar con costo ---
@@ -186,18 +214,7 @@ function formatDuration(hours) {
   return h + (h === 1 ? " hora " : " horas ") + m + " min";
 }
 
-// --- Auto-launch: se ejecuta al abrir nueva reunion ---
-
-function onNewAppointmentOrganizer(event) {
-  // Mostrar InfoBar inicial informando que el calculo esta activo
-  showNotification(
-    "Calculadora de costo activa. Agregue asistentes y presione Enviar para ver el costo.",
-    event
-  );
-}
-
 // --- Register handlers ---
 
 Office.actions.associate("onNewAppointmentOrganizer", onNewAppointmentOrganizer);
-Office.actions.associate("onAppointmentSendHandler", onAppointmentSendHandler);
 Office.actions.associate("calculateCostFunction", calculateCostFunction);
