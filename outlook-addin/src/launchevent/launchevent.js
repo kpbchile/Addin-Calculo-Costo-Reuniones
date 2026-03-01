@@ -16,12 +16,31 @@ var _pollInterval = null;
 var _lastHash = "";
 
 function onNewAppointmentOrganizer(event) {
-  // Iniciar polling cada 3 segundos para detectar cambios
-  _pollInterval = setInterval(recalculateAndUpdateInfoBar, 3000);
+  var handlersReady = 0;
 
-  // Mostrar InfoBar inicial
-  updateInfoBar("Calculador de costo activo. Agregue asistentes para ver el costo.");
-  // No llamamos event.completed() para mantener el runtime vivo
+  function onHandlerDone() {
+    handlersReady++;
+    if (handlersReady === 2) {
+      // Ambos handlers registrados, iniciar polling como respaldo
+      _pollInterval = setInterval(recalculateAndUpdateInfoBar, 3000);
+      updateInfoBar("Calculador de costo activo. Agregue asistentes para ver el costo.");
+      event.completed();
+    }
+  }
+
+  // Registrar handler para cambios de asistentes
+  Office.context.mailbox.item.addHandlerAsync(
+    Office.EventType.RecipientsChanged,
+    recalculateAndUpdateInfoBar,
+    onHandlerDone
+  );
+
+  // Registrar handler para cambios de hora
+  Office.context.mailbox.item.addHandlerAsync(
+    Office.EventType.AppointmentTimeChanged,
+    recalculateAndUpdateInfoBar,
+    onHandlerDone
+  );
 }
 
 function recalculateAndUpdateInfoBar() {
