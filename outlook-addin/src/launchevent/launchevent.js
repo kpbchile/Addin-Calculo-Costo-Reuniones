@@ -12,26 +12,16 @@ var NOTIFICATION_KEY = "costReunion";
 
 // --- Auto-launch: se ejecuta al abrir nueva reunion ---
 
+var _pollInterval = null;
+var _lastHash = "";
+
 function onNewAppointmentOrganizer(event) {
-  // Registrar handlers para recalcular cuando cambien asistentes o tiempo
-  Office.context.mailbox.item.addHandlerAsync(
-    Office.EventType.RecipientsChanged,
-    onRecipientsOrTimeChanged
-  );
-  Office.context.mailbox.item.addHandlerAsync(
-    Office.EventType.AppointmentTimeChanged,
-    onRecipientsOrTimeChanged
-  );
+  // Iniciar polling cada 3 segundos para detectar cambios
+  _pollInterval = setInterval(recalculateAndUpdateInfoBar, 3000);
 
   // Mostrar InfoBar inicial
   updateInfoBar("Calculador de costo activo. Agregue asistentes para ver el costo.");
-  event.completed();
-}
-
-// --- Handler para cambios en asistentes o tiempo ---
-
-function onRecipientsOrTimeChanged() {
-  recalculateAndUpdateInfoBar();
+  // No llamamos event.completed() para mantener el runtime vivo
 }
 
 function recalculateAndUpdateInfoBar() {
@@ -39,22 +29,24 @@ function recalculateAndUpdateInfoBar() {
     if (!data) return;
 
     var costData = computeCost(data);
+    var newMessage;
 
     if (costData.totalInternalParticipants < MIN_INTERNAL_ATTENDEES) {
-      updateInfoBar(
-        "Participantes internos: " + costData.totalInternalParticipants +
-        ". El calculo se activa con " + MIN_INTERNAL_ATTENDEES + " o mas."
-      );
-      return;
+      newMessage = "Participantes internos: " + costData.totalInternalParticipants +
+        ". El calculo se activa con " + MIN_INTERNAL_ATTENDEES + " o mas.";
+    } else {
+      var formattedCost = formatCurrency(costData.totalCost);
+      var durationDisplay = formatDuration(costData.durationHours);
+      newMessage = "Costo reunion: $" + formattedCost +
+        " (" + costData.totalInternalParticipants + " internos, " +
+        durationDisplay + ", $" + formatCurrency(COST_PER_HOUR_PER_PERSON) + "/hr/persona)";
     }
 
-    var formattedCost = formatCurrency(costData.totalCost);
-    var durationDisplay = formatDuration(costData.durationHours);
-    updateInfoBar(
-      "Costo reunion: $" + formattedCost +
-      " (" + costData.totalInternalParticipants + " internos, " +
-      durationDisplay + ", $" + formatCurrency(COST_PER_HOUR_PER_PERSON) + "/hr/persona)"
-    );
+    // Solo actualizar si el mensaje cambio (evita parpadeo)
+    if (newMessage !== _lastHash) {
+      _lastHash = newMessage;
+      updateInfoBar(newMessage);
+    }
   });
 }
 
